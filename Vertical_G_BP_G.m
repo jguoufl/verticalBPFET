@@ -18,7 +18,6 @@ clc;
 %% Control flag
 flag_gate =  1;                % 1 for back gate, 2 for double gate 
 dev_flag  =  3;                % 2 for S/S PN junction, 3 for S/M/S BJT
-
 % T_range = [300 250 210 175 150 125 100 77];
 % T_range = [77]; 
 % for ind_T = 1:length(T_range)
@@ -35,7 +34,7 @@ mat_bot   =  1;                % material of bottom semiconductor, 1 for Graphen
 Nsem_top  =  1;                % # of layers of top semiconductor thickness
 mat_top   =  1;                % material of top semiconductor, 1 for Graphene
 
-Nsem_bar  = 20;                % # of layers of top semiconductor thickness
+Nsem_bar  = 30;                % # of layers of top semiconductor thickness
 mat_bar   = 2;                 % material of top semiconductor, 2 for BP
 
 dev_para;                      %set physical parameters
@@ -51,7 +50,7 @@ cap_model_TMD;                          % capacitance model for electrostatics
 %%% gate bias
 %Vfb_bot        =  wf_gate_bot - wf_bot; % the flat band voltage, wf_gate_bot - wf_sem_bot
 Vfb_bot         =  0;
-Vg_bot          =  6;     %15;%6.4:0.015:6.66;
+Vg_bot          =  -10:1:10;     %15;%6.4:0.015:6.66;
 NVg_bot_step    =  length(Vg_bot);
 
 I               = zeros(NVg_bot_step,1);
@@ -193,6 +192,4 @@ print -dtiff Id_Vg
 % save(filename, 'Vg_top', 'Vg_bot', 'Vpn', 'I', 'Eg_top0', 'Eg_bot0',...
 %     'Eg_top', 'Eg_bot', 'Nd_bot', 'Nd_top', 'E_gstate', 't_ratio');
 
-
-
-% end
+save results

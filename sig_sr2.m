@@ -15,7 +15,7 @@ epso_old=H00;
 epsos_old=H00;
 alpha_old=H01-ee*S01;
 beta_old=H01'-ee*S01';
-eta=1e-6*i;
+eta=1e-10*i;
 
 err=1;
 counter=1;
