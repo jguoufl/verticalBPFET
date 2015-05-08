@@ -13,7 +13,7 @@ kBT   =  0.0259*T/300;  % [eV]
 m0    =  9.11e-31;      % [kg]
 mt=0.5;
 kmax=3e9;  % max transverse wave vector;
-ktv=[0:0.1:1]; %% normalized transverse wave vector
+ktv=[0:0.05:1]; %% normalized transverse wave vector
 E0kt=hbar^2*kmax^2/(2*m0*mt*q);
 Nkt=length(ktv);
 %%% For debug %%%
@@ -30,8 +30,8 @@ Np   = Nsem_bar;            % # of priciple layer
 a    = 6.5e-10;             % grid length
 Lch  = (Np-1) * a;          % channel length [m]
 
-me   = 0.09*m0;             % Effective mass of Silicon, here m=mt  [kg]
-mh   = 0.09*m0;
+me   = 0.3*m0;             % Effective mass of Silicon, here m=mt  [kg]
+mh   = 0.3*m0;
 
 t0e  = hbar^2/(2*me*a^2)/q; % coupling between unit cells  [eV]
 t0h  = hbar^2/(2*mh*a^2)/q;
@@ -62,7 +62,7 @@ current=0;  % initialization
 if flag_spec==1  % plot only one mode
     Nkt=1;
 end
-ED_sd=[Ecvec(1) Ecvec(Np+2)];  % the Dirac point of graphene S/D
+ED_sd=[Ecvec(1) Ecvec(length(Ecvec))];  % the Dirac point of graphene S/D
 for ii_kt=1:Nkt
     Ec_kt=E0kt*ktv(ii_kt)^2;
     Ev_kt=E0kt*ktv(ii_kt)^2;
@@ -72,28 +72,28 @@ for ii_kt=1:Nkt
         Em=(Ecveckt(ii+1)+Evveckt(ii+1))/2;
         Egh=(Ecveckt(ii+1)-Evveckt(ii+1))/2;
         
-        %     %%% Hamiltonian type 1: uncoupled Ec and Ev
-        %     HD{ii} = [2*t0e+Ecvec(ii+1) 0; 0 -2*t0h+Evvec(ii+1)];
-        %     %HD{ii} = [2*t0e+Em 1i*Egh; -1i*Egh -2*t0h+Em];
-        %
-        %     SD{ii} = zeros(2);
-        %     if ii < Np
-        %         HUD{ii} = [-t0e 0; 0 t0h];
-        %         SUD{ii} = 0;
-        %     end
-        %
-        %%% Hamiltonian type 2: coupled Ec and Ev
-        %%% Hamiltonian type 1: uncoupled Ec and Ev
-        %HD{ii} = [Em Egh+EvF; EvF+Egh Em];   % forward difference, choice 1, off diagonal Egh
-        HD{ii} = [Em+Egh EvF; EvF Em-Egh];  % forward difference, choice 2,diagonal Egh, almost same results as choice 1
-        %HD{ii} = [Em+Egh 0; 0 Em-Egh];     % middle difference, Fermion doubling problem
+            %%% Hamiltonian type 1: uncoupled Ec and Ev
+            HD{ii} = [2*t0e+Ecvec(ii+1) 0; 0 -2*t0h+Evvec(ii+1)];
+            %HD{ii} = [2*t0e+Em 1i*Egh; -1i*Egh -2*t0h+Em];
         
-        SD{ii} = eye(2);
-        if ii < Np
-            HUD{ii} = [0 -EvF; 0 0];    % forward difference, same for both choices
-            %HUD{ii} = (EvF/2)*[0 -1; 1 0];    % middle difference, Fermion doubling problem
-            SUD{ii} = zeros(2,2);
-        end
+            SD{ii} = zeros(2);
+            if ii < Np
+                HUD{ii} = [-t0e 0; 0 t0h];
+                SUD{ii} = 0;
+            end
+        
+%         %%% Hamiltonian type 2: coupled Ec and Ev
+%         %%% Hamiltonian type 1: uncoupled Ec and Ev
+%         %HD{ii} = [Em Egh+EvF; EvF+Egh Em];   % forward difference, choice 1, off diagonal Egh
+%         HD{ii} = [Em+Egh EvF; EvF Em-Egh];  % forward difference, choice 2,diagonal Egh, almost same results as choice 1
+%         %HD{ii} = [Em+Egh 0; 0 Em-Egh];     % middle difference, Fermion doubling problem
+%         
+%         SD{ii} = eye(2);
+%         if ii < Np
+%             HUD{ii} = [0 -EvF; 0 0];    % forward difference, same for both choices
+%             %HUD{ii} = (EvF/2)*[0 -1; 1 0];    % middle difference, Fermion doubling problem
+%             SUD{ii} = zeros(2,2);
+%         end
     end
     
     for ii = 1:(Np-1)
@@ -109,7 +109,7 @@ for ii_kt=1:Nkt
         current_kt = q^2/(2*pi*hbar)*sum((IE(:,1)+IE(:,2)).*dE);
     else
         %% Gaussian quadrature
-        [Inorm dum]=quadv(@func_current,min(E_grid),max(E_grid),1e-6,[],HD, AUD, ALD, mu1, mu2,ED_sd);
+        [Inorm dum]=quadv(@func_current,min(E_grid),max(E_grid),1e-7,[],HD, AUD, ALD, mu1, mu2,ED_sd);
         current_kt(ii_kt) = q^2/(2*pi*hbar)*Inorm; 
         %% end of Gaussian quadrature approach
     end

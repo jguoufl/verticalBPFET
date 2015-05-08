@@ -34,9 +34,9 @@ mat_bot   =  1;                % material of bottom semiconductor, 1 for Graphen
 Nsem_top  =  1;                % # of layers of top semiconductor thickness
 mat_top   =  1;                % material of top semiconductor, 1 for Graphene
 
-Nsem_bar  = 30;                % # of layers of top semiconductor thickness
+Nsem_bar  = 20;                % # of layers of top semiconductor thickness
 mat_bar   = 2;                 % material of top semiconductor, 2 for BP
-
+Nl_tot=Nsem_bot+Nsem_top+Nsem_bar;   % total number of layers
 dev_para;                      %set physical parameters
 
 %% Gate condition
@@ -49,15 +49,15 @@ cap_model_TMD;                          % capacitance model for electrostatics
 %% bias condition
 %%% gate bias
 %Vfb_bot        =  wf_gate_bot - wf_bot; % the flat band voltage, wf_gate_bot - wf_sem_bot
-Vfb_bot         =  0;
-Vg_bot          =  -10:1:10;     %15;%6.4:0.015:6.66;
+Vfb_bot         =  -5;
+Vg_bot          =  10;     %15;%6.4:0.015:6.66;
 NVg_bot_step    =  length(Vg_bot);
 
 I               = zeros(NVg_bot_step,1);
 %%%%%%%%%%%%%%%%%%%
 
 %% S/D bias
-VD = -0.1;
+VD = 0.1;
 
 %% initialize datas
 % Efvec_cell   =  cell(Vpn_step+1,NVg_top_step+1);     % Fermi level 
@@ -78,8 +78,10 @@ for ii_vg_bot = 1 : NVg_bot_step
     Ef_top     = 0;        % Fermi level of top semiconductor
     Ef_bot     = -VD;        % Fermi level of bottom semiconductor
     
-    Efnvec     = [Ef_bot*ones(Nsem_bot,1); Ef_bot*ones(Nsem_bar,1); Ef_top*ones(Nsem_top,1)];
-    Efpvec     = [Ef_bot*ones(Nsem_bot,1); Ef_top*ones(Nsem_bar,1); Ef_top*ones(Nsem_top,1)];
+    %Efnvec     = [Ef_bot*ones(Nsem_bot,1); Ef_bot*ones(Nsem_bar,1); Ef_top*ones(Nsem_top,1)];
+    %Efpvec     = [Ef_bot*ones(Nsem_bot,1); Ef_top*ones(Nsem_bar,1); Ef_top*ones(Nsem_top,1)];
+    Efnvec=linspace(Ef_bot,Ef_top,Nl_tot)';
+    Efpvec=Efnvec;
     
     %%% Simulation starts
     error    = 1;
@@ -97,7 +99,7 @@ for ii_vg_bot = 1 : NVg_bot_step
         Nev  = charge(Efmn, Efmp , Egvec./2, vFvec, dsp_int, 0); % electron charge in each layer
         
         res = Nev - Nd_vec*q - Cm * En;
-        
+
         % Add the effect of gate voltage,
         if flag_gate==1  % the effect of gate voltage,
             res(1) = res(1) + Cox*(-Vg_bot_eff); % Egate = -q*Vgeff
@@ -107,7 +109,7 @@ for ii_vg_bot = 1 : NVg_bot_step
             res(end) = res(end) + Cox*(-Vg_top_eff); % Egate = -q*Vgeff
         end
         
-        
+
         %%% compute Jacobian matrix
         Jac=diag(charge(Efmn, Efmp, Egvec./2, vFvec, dsp_int, 1))-Cm;
         
@@ -125,21 +127,22 @@ for ii_vg_bot = 1 : NVg_bot_step
     Qm_cell     = Nev/q;  % store the charge density
     %
     %     Efvec_cell{ii_vg_bot,ii_vg_top}   = Efvec;
-    %     Ecvec_cell{ii_vg_bot,ii_vg_top}   = Ecvec;
+         Ecvec_cell{ii_vg_bot,:}   = Ecvec;
     %     Evvec_cell{ii_vg_bot,ii_vg_top}   = Evvec;
     %     Emvec_cell{ii_vg_bot,ii_vg_top}   = Emd;
     %     Evacvec_cell{ii_vg_bot,ii_vg_top} = Evacvec;
     
     %%% plot the bandprofile
     figure (11)
-    plot(1,Ecvec(1),'kx','markersize',20,'linewidth',5)
+    plot(1:Nsem_bot,Ecvec(1:Nsem_bot),'kx','markersize',20,'linewidth',5)
     hold on
     plot(length(Ecvec),Ecvec(end),'kx','markersize',20,'linewidth',5)
-    plot(2:length(Ecvec)-1,Ecvec(2:end-1), 'linewidth', 2)
-    plot(2:length(Evvec)-1,Evvec(2:end-1), 'linewidth', 2)
+    start=Nsem_bot+1;
+    plot(start:length(Ecvec)-1,Ecvec(start:end-1), 'linewidth', 2)
+    plot(start:length(Evvec)-1,Evvec(start:end-1), 'linewidth', 2)
     plot(1:length(Evvec),Efnvec,'r--', 'linewidth', 2)
     plot(1:length(Evvec),Efpvec,'g--', 'linewidth', 2)
-    plot([2 2], [Evvec(2) Ecvec(2)],...
+    plot(start*[1 1], [Evvec(start) Ecvec(start)],...
         'linewidth', 2);
     plot([length(Ecvec)-1 length(Ecvec)-1], [Evvec(end-1) Ecvec(end-1)],...
         'linewidth', 2);
@@ -169,7 +172,7 @@ end
 
 %% plot the current
 figure (100)
-semilogy(Vg_bot,I, 'bs-', 'linewidth', 2)
+semilogy(Vg_bot,abs(I), 'bs-', 'linewidth', 2)
 hold on
 set(gca,'linewidth',2,'fontsize',16, 'box','on')
 xlabel('V_G [V]','fontsize',16)

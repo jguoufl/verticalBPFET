@@ -10,9 +10,9 @@ kBT   =  0.0259*T/300;  % [eV]
 m0    =  9.11e-31;      % [kg]
 
 %% Doping concentration
-Nd_bot    =  -10e16;           % [m^2], donor doping of the source and drain contacts
-Nd_top    =  -1e16;
-Nd_bar    =  -5e15;           % [m^2], donor doping of the barrier
+Nd_bot    =  -3e16;           % [m^2], donor doping of the source and drain contacts
+Nd_top    =  -3e16;
+Nd_bar    =  -0e15;           % [m^2], donor doping of the barrier
 
 %% Characterize bottom semiconductor
 % epsr_bot = epsrsem_mat(mat_bot);     % Dielectric constant 
@@ -20,27 +20,27 @@ Nd_bar    =  -5e15;           % [m^2], donor doping of the barrier
 
 Eg_bot   = 0;        % Bandgap of Graphene                  
 
-wf_bot   = 4.4;     % work function, i.e. Evacuum - Dirac point
+wf_bot   = 4.9;     % work function of intrinsic , i.e. Evacuum - Dirac point
 
-vF_bot   = 8e5;
+vF_bot   = 9.3e5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Characterize top semiconductor
 Eg_top   = 0;        % Bandgap of Graphene                  
 
-wf_top   = 4.9;%4.6;     % work function, i.e. Evacuum - Dirac point
+wf_top   = 4.9;%4.6;     % work function of intrinsic, i.e. Evacuum - Dirac point
 
-vF_top   = 8e5;
+vF_top   = 9.3e5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% Characterize the barrier
-epsr_bar = 2;%8.3;      % Dielectric constant of the barrier
+epsr_bar = 8;%8.3;      % Dielectric constant of the barrier
                      % J.P.S Japan, 54, 6, 2096, 1985
                      
-Eg_bar   = 0.35;      % Bandgap of Multilayer BP                         
+Eg_bar   = 0.31;      % Bandgap of Multilayer BP                         
                      
-wf_bar   = 5.0;%4.5; % Work function, i.e. Evacuum-middle gap energy
+wf_bar   = 4.8;%4.5; % Work function, i.e. Evacuum-middle gap energy
                      % Sci. Rep. 4, 6677, 2014 
 
 % m_bar    = 0.09*m0;                     

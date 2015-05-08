@@ -3,7 +3,7 @@
 Nd_vec = [Nd_bot*ones(Nsem_bot,1); Nd_bar*ones(Nsem_bar,1); Nd_top*ones(Nsem_top,1)]; % donor density vector in all layers
 
 dsp_bot = 6.5e-10;         % The interlayer distance between Graphene and BP
-dsp_top = 6.5e-6;
+dsp_top = 6.5e-10;
 dsp_int = 6.5e-10;         % The distance between adjacent BP layers
     
 Cbot    = epso / dsp_bot;  % Air is assumed in between two materials
