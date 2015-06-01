@@ -18,17 +18,10 @@ clc;
 %% Control flag
 flag_gate =  1;                % 1 for back gate, 2 for double gate 
 dev_flag  =  3;                % 2 for S/S PN junction, 3 for S/M/S BJT
-% T_range = [300 250 210 175 150 125 100 77];
-% T_range = [77]; 
-% for ind_T = 1:length(T_range)
-% T         =  T_range(ind_T);
-
-T         =  300;
-
 dmp       =  0.1;
 
 %% Structure def
-Nsem_bot  =  1;                % # of layers of bottom semiconductor thickness
+Nsem_bot  =  0;                % # of layers of bottom semiconductor thickness
 mat_bot   =  1;                % material of bottom semiconductor, 1 for Graphene
 
 Nsem_top  =  1;                % # of layers of top semiconductor thickness
@@ -37,6 +30,8 @@ mat_top   =  1;                % material of top semiconductor, 1 for Graphene
 Nsem_bar  = 20;                % # of layers of top semiconductor thickness
 mat_bar   = 2;                 % material of top semiconductor, 2 for BP
 Nl_tot=Nsem_bot+Nsem_top+Nsem_bar;   % total number of layers
+
+%%% set other device parameters
 dev_para;                      %set physical parameters
 
 %% Gate condition
@@ -48,7 +43,6 @@ cap_model_TMD;                          % capacitance model for electrostatics
 
 %% bias condition
 %%% gate bias
-%Vfb_bot        =  wf_gate_bot - wf_bot; % the flat band voltage, wf_gate_bot - wf_sem_bot
 Vfb_bot         =  -5;
 Vg_bot          =  10;     %15;%6.4:0.015:6.66;
 NVg_bot_step    =  length(Vg_bot);
@@ -57,7 +51,7 @@ I               = zeros(NVg_bot_step,1);
 %%%%%%%%%%%%%%%%%%%
 
 %% S/D bias
-VD = 0.1;
+Vd = 0.1;
 
 %% initialize datas
 % Efvec_cell   =  cell(Vpn_step+1,NVg_top_step+1);     % Fermi level 
@@ -76,7 +70,7 @@ for ii_vg_bot = 1 : NVg_bot_step
     Vg_bot_eff = Vg_bot(ii_vg_bot) - Vfb_bot;
     
     Ef_top     = 0;        % Fermi level of top semiconductor
-    Ef_bot     = -VD;        % Fermi level of bottom semiconductor
+    Ef_bot     = -Vd;        % Fermi level of bottom semiconductor
     
     %Efnvec     = [Ef_bot*ones(Nsem_bot,1); Ef_bot*ones(Nsem_bar,1); Ef_top*ones(Nsem_top,1)];
     %Efpvec     = [Ef_bot*ones(Nsem_bot,1); Ef_top*ones(Nsem_bar,1); Ef_top*ones(Nsem_top,1)];
@@ -127,7 +121,7 @@ for ii_vg_bot = 1 : NVg_bot_step
     Qm_cell     = Nev/q;  % store the charge density
     %
     %     Efvec_cell{ii_vg_bot,ii_vg_top}   = Efvec;
-         Ecvec_cell{ii_vg_bot,:}   = Ecvec;
+         Ecvec_cell(ii_vg_bot,:)   = Ecvec';
     %     Evvec_cell{ii_vg_bot,ii_vg_top}   = Evvec;
     %     Emvec_cell{ii_vg_bot,ii_vg_top}   = Emd;
     %     Evacvec_cell{ii_vg_bot,ii_vg_top} = Evacvec;
@@ -151,48 +145,20 @@ for ii_vg_bot = 1 : NVg_bot_step
     xlabel('# of Layer','fontsize',16)
     ylabel('Bandprofile [eV]','fontsize',16)
     
-    %      save tmp_res Ecvec Efnvec Efpvec Evvec Nsem_bar
-    %      keyboard
-    
-    
+
     %%% I-V characterization
     %      Tran_cal;
     Vg_bot(ii_vg_bot)
-    I(ii_vg_bot) = Cur_cal(Ecvec, Evvec, Efnvec, Efpvec, Nsem_bar)
+    I(ii_vg_bot) = current(Ecvec, Evvec, Efnvec, Efpvec, Nsem_bar)
     
 end
 
 
-% for ii_vg_bot = 1 : NVg_bot_step-1
-%    
-%     SS(ii_vg_bot) =  1e3*(Vg_bot(ii_vg_bot+1)-Vg_bot(ii_vg_bot))/...
-%         log10(I(ii_vg_bot+1)/I(ii_vg_bot));
-% end
-
-
 %% plot the current
-figure (100)
+figure (3)
 semilogy(Vg_bot,abs(I), 'bs-', 'linewidth', 2)
 hold on
 set(gca,'linewidth',2,'fontsize',16, 'box','on')
 xlabel('V_G [V]','fontsize',16)
 ylabel('Current [a.u.]','fontsize',16)
-print -dtiff Id_Vg
-% xlim([6 7])
 
-
-
-%% save the datas
-% % filename = ['pos_doped_Vg_top_' num2str(Vg_top) '_T_' num2str(T) '.mat'];
-% if drain_flag == 0
-%     filename = ['neg_doped_Vg_top_' num2str(Vg_top) '_T_' num2str(T)  '.mat'];
-% %     filename = ['neg_doped_Vg_top_' num2str(Vg_top)  '_tRG_' num2str(t_RG*1e9) '_T_' num2str(T)  '.mat'];
-% else
-%     filename = ['pos_doped_Vg_top_' num2str(Vg_top) '_T_' num2str(T)  '.mat'];
-% %     filename = ['pos_doped_Vg_top_' num2str(Vg_top)  '_tRG_' num2str(t_RG*1e9) '_T_' num2str(T)  '.mat'];
-% end
-% 
-% save(filename, 'Vg_top', 'Vg_bot', 'Vpn', 'I', 'Eg_top0', 'Eg_bot0',...
-%     'Eg_top', 'Eg_bot', 'Nd_bot', 'Nd_top', 'E_gstate', 't_ratio');
-
-save results

@@ -2,12 +2,14 @@
 %%% set physical parameters
 
 %% physical constants
-global q hbar kBT N3D
+global q hbar kBT N3D m0 mt T
 epso  =  8.85e-12;      % [F/m]
 q     =  1.6e-19;       % [c]
 hbar  =  1.055e-34;     % [Js] 
-kBT   =  0.0259*T/300;  % [eV]
 m0    =  9.11e-31;      % [kg]
+mt=0.5;     % effective mass in transverse direction
+T         =  300;
+kBT   =  0.0259*T/300;  % [eV]
 
 %% Doping concentration
 Nd_bot    =  -3e16;           % [m^2], donor doping of the source and drain contacts
@@ -15,8 +17,6 @@ Nd_top    =  -3e16;
 Nd_bar    =  -0e15;           % [m^2], donor doping of the barrier
 
 %% Characterize bottom semiconductor
-% epsr_bot = epsrsem_mat(mat_bot);     % Dielectric constant 
-% epsr_bot=7;
 
 Eg_bot   = 0;        % Bandgap of Graphene                  
 
@@ -36,8 +36,7 @@ vF_top   = 9.3e5;
 
 %% Characterize the barrier
 epsr_bar = 8;%8.3;      % Dielectric constant of the barrier
-                     % J.P.S Japan, 54, 6, 2096, 1985
-                     
+                     % J.P.S Japan, 54, 6, 2096, 1985                
 Eg_bar   = 0.31;      % Bandgap of Multilayer BP                         
                      
 wf_bar   = 4.8;%4.5; % Work function, i.e. Evacuum-middle gap energy

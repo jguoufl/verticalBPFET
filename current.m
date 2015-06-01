@@ -1,28 +1,19 @@
 
-function current=Cur_cal(Ecvec, Evvec, Efnvec, Efpvec, Nsem_bar)
+function [Id]=current(Ecvec, Evvec, Efnvec, Efpvec, Nsem_bar)
 
-% clear all
-% close all
+global q hbar kBT N3D m0 mt T
 flag_spec = 0; % 1 for computing the T(E), 0 for Gaussian quadrature.
 
 %% Physical Parameters
-q     =  1.6e-19;       % [c]
-hbar  =  1.055e-34;     % [Js] 
-T     =  300;
-kBT   =  0.0259*T/300;  % [eV]
-m0    =  9.11e-31;      % [kg]
-mt=0.5;
 kmax=3e9;  % max transverse wave vector;
 ktv=[0:0.05:1]; %% normalized transverse wave vector
 E0kt=hbar^2*kmax^2/(2*m0*mt*q);
 Nkt=length(ktv);
-%%% For debug %%%
-% load tmp_res
+
 % 
 mu1   =  Efnvec(1);
 mu2   =  Efpvec(end);
 % 
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -44,9 +35,6 @@ SD=cell(Np,1); SUD=cell(Np-1,1);
 Etail = 5 * kBT;
 maxE  = max([max(Ecvec) mu1 mu2]) + Etail;
 minE  = min([min(Evvec) mu1 mu2]) - Etail; 
-
-% maxE    = max(Evvec(2:end-1));
-% minE    = min(Ecvec(2:end-1));
 
 % energy grid
 nE    = ceil((maxE-minE)/2e-4);
@@ -114,7 +102,7 @@ for ii_kt=1:Nkt
         %% end of Gaussian quadrature approach
     end
 end
-current=sum(current_kt);
+Id=sum(current_kt);
 
 %%%%%% visualization
 %%%
