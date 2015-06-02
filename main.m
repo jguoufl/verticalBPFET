@@ -1,38 +1,18 @@
 %%% Calculate electrostatic profile in layered structure, then calculate
 %%% transmission and current according to WKB approximation
 %%% Simple capacitance model is used 
-%%% Originally written by Jason, 2014
-%%% Revise by Xi Cao, Aug. 2014
+%%% Computational Nanoelectronics Lab, 2013-2016
 %%% Mainly for 4L MoS2/ 4L WSe2 vertical heterojunction
 %%% Reference, 1) K.-T. Lam, et al. A.P.L 105,013112(2014)
 %%%            2) L. Britnell, et al. Science 335, 947-950 (2012)
 %%%            3) S. B. Desai, et al. Nano Lett. 14, 4592-4597 (2014)
 %%%            4) W. S. Yun, et al. P.R.B 85, 033305 (2012)
-%%% RG process is added by Xi Cao, Oct. 2014
-%%% Revised by Xi Cao, April 2015 for Graphene-BP-Graphene Heterojunction
 
 close all
 clear all
 clc;
-
-%% Control flag
-flag_gate =  1;                % 1 for back gate, 2 for double gate 
-dev_flag  =  3;                % 2 for S/S PN junction, 3 for S/M/S BJT
-dmp       =  0.1;
-
-%% Structure def
-Nsem_bot  =  0;                % # of layers of bottom semiconductor thickness
-mat_bot   =  1;                % material of bottom semiconductor, 1 for Graphene
-
-Nsem_top  =  1;                % # of layers of top semiconductor thickness
-mat_top   =  1;                % material of top semiconductor, 1 for Graphene
-
-Nsem_bar  = 20;                % # of layers of top semiconductor thickness
-mat_bar   = 2;                 % material of top semiconductor, 2 for BP
-Nl_tot=Nsem_bot+Nsem_top+Nsem_bar;   % total number of layers
-
 %%% set other device parameters
-dev_para;                      %set physical parameters
+inp;                      %set physical parameters
 
 %% Gate condition
 epsi_ox   =  3.9;
@@ -90,7 +70,7 @@ for ii_vg_bot = 1 : NVg_bot_step
         Emd  = En + Emb2Emt;                 % Middle gap energy level Em
         Efmn = Efnvec - Emd;                  % Ef-Em as a function of layer index
         Efmp = Efpvec - Emd;
-        Nev  = charge(Efmn, Efmp , Egvec./2, vFvec, dsp_int, 0); % electron charge in each layer
+        Nev  = charge(Efmn, Efmp , Egvec./2, vFvec, d_int, 0); % electron charge in each layer
         
         res = Nev - Nd_vec*q - Cm * En;
 
@@ -105,7 +85,7 @@ for ii_vg_bot = 1 : NVg_bot_step
         
 
         %%% compute Jacobian matrix
-        Jac=diag(charge(Efmn, Efmp, Egvec./2, vFvec, dsp_int, 1))-Cm;
+        Jac=diag(charge(Efmn, Efmp, Egvec./2, vFvec, d_int, 1))-Cm;
         
         %%% update the potential profile
         dEn   = -Jac\res;
