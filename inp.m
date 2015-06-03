@@ -24,7 +24,7 @@ dmp       =  0.1;
 Nsem_bot  =  1;                % # of layers of bottom semiconductor thickness
 mat_bot   =  1;                % material of bottom semiconductor, 1 for Graphene
 Eg_bot   = 0;        % Bandgap of Graphene                  
-wf_bot   = 4.8;     % work function of intrinsic , i.e. Evacuum - Dirac point
+wf_bot   = 4.7;     % work function of intrinsic , i.e. Evacuum - Dirac point
 vF_bot   = 9.3e5;
 Nd_bot    =  -1e16;           % [m^2], donor doping of the source and drain contacts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,7 +33,7 @@ Nd_bot    =  -1e16;           % [m^2], donor doping of the source and drain cont
 Nsem_top  =  1;                % # of layers of top semiconductor thickness
 mat_top   =  1;                % material of top semiconductor, 1 for Graphene
 Eg_top   = 0;        % Bandgap of Graphene                  
-wf_top   = 5.0;%4.6;     % work function of intrinsic, i.e. Evacuum - Dirac point
+wf_top   = 4.7;%4.6;     % work function of intrinsic, i.e. Evacuum - Dirac point
 vF_top   = 9.3e5;
 Nd_top    =  -7e16;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -44,7 +44,7 @@ Nsem_bar  = 20;                % # of layers of top semiconductor thickness
 mat_bar   = 2;                 % material of top semiconductor, 2 for BP
 epsr_channel = 8;%8.3;      % Dielectric constant of the barrier                     % J.P.S Japan, 54, 6, 2096, 1985                
 Eg_bar   = 0.31;      % Bandgap of Multilayer BP                        
-wf_bar   = 4.8;%4.5; % Work function, i.e. Evacuum-middle gap energy
+wf_bar   = 4.6;%4.5; % Work function, i.e. Evacuum-middle gap energy
 Nd_bar    =  -0e15;           % [m^2], donor doping of the barrier
                      
 % m_bar    = 0.09*m0;   % Sci. Rep. 4, 6677, 2014                      

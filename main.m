@@ -25,8 +25,8 @@ cap_model_TMD;                          % capacitance model for electrostatics
 
 %% bias condition
 %%% gate bias
-Vfb_bot=  -5;
-Vg_bot=5;     %15;%6.4:0.015:6.66;
+Vfb_bot=  -3;
+Vg_bot=10;     
 Vd = 0.5;     %% S/D bias
 
 NVg_bot_step =  length(Vg_bot);
@@ -109,8 +109,8 @@ for ii_vg_bot = 1 : NVg_bot_step
                 zetap=(Evvec_ch-Fp)./kBT;
                 Qnet_ch  = q*N03D*d_int*(fermi(zetan,1,1/2)-fermi(zetap,1,1/2));
                 Qnet(2:Ntot-1,1)=Qnet_ch;
-                Qnet(1)=q*N2Dgr*sign(0-ED_sd(1))*(0-ED_sd(1))^2;
-                Qnet(Ntot)=q*N2Dgr*sign(-Vd-ED_sd(2))*(-Vd-ED_sd(2))^2;
+                Qnet(1)=q*N2Dgr*sign(0-ED_sd(1))*(Ef_bot-ED_sd(1))^2;
+                Qnet(Ntot)=q*N2Dgr*sign(-Vd-ED_sd(2))*(Ef_top-ED_sd(2))^2;
                 res = Qnet - Nd_vec*q - Cm * En;  % in C/m^2
                 % Add the effect of gate voltage,
                 if flag_gate==1  % the effect of gate voltage,
@@ -121,8 +121,8 @@ for ii_vg_bot = 1 : NVg_bot_step
                     res(Ntot) = res(Ntot) + Cox*(-Vg_top_eff); % Egate = -q*Vgeff
                 end
                 Jac_diag(2:Ntot-1)=-(q*N03D*d_int/kBT)*(fermi(zetan,1,1/2)+fermi(zetap,1,1/2));
-                Jac_diag(1)=-2*q*N2Dgr*abs(0-ED_sd(1));
-                Jac_diag(Ntot)=-2*q*N2Dgr*abs(-Vd-ED_sd(2));
+                Jac_diag(1)=-2*q*N2Dgr*abs(Ef_bot-ED_sd(1));
+                Jac_diag(Ntot)=-2*q*N2Dgr*abs(Ef_top-ED_sd(2));
                 %% compute the Jacobian matrix
                 Jac=diag(Jac_diag)-Cm;
                 dEn   = -Jac\res;
@@ -139,7 +139,6 @@ for ii_vg_bot = 1 : NVg_bot_step
     %%% postprocess the self-consistent data
     Ecvec   = Emd + Egvec./2;
     Evvec   = Emd - Egvec./2;
-    Evacvec = Emd + wfvec;
     ED_sd=[Ecvec(1) Ecvec(length(Ecvec))];  % the Dirac point of graphene S/D
     Ecvec_ch=Ecvec(2:length(Ecvec)-1); % Ec of the channel
     Evvec_ch=Evvec(2:length(Evvec)-1); % Ev of the channel
@@ -148,8 +147,11 @@ for ii_vg_bot = 1 : NVg_bot_step
     %%%%% computer the current
     Vg_bot(ii_vg_bot)
     [I(ii_vg_bot), Evec, JEx]=current(ED_sd,Ecvec_ch,Evvec_ch,HD0,AUD,Vd);
-
     
+    %% record the vacuum level and the charge density
+    Evacvec = Emd + wfvec;
+    rho_n=Qnet./q-Nd_vec;  % net charge density (electron positive)
+
     %%% plot the bandprofile
     figure (11)
     plot(1:Nsem_bot,Ecvec(1:Nsem_bot),'kx','markersize',20,'linewidth',5)
@@ -157,9 +159,11 @@ for ii_vg_bot = 1 : NVg_bot_step
     plot(length(Ecvec),Ecvec(end),'kx','markersize',20,'linewidth',5)
     start=Nsem_bot+1;
     plot(start:length(Ecvec)-1,Ecvec(start:end-1), 'linewidth', 2)
-    plot(start:length(Evvec)-1,Evvec(start:end-1), 'linewidth', 2)
-    plot(1:length(Evvec),Efnvec,'r--', 'linewidth', 2)
-    plot(1:length(Evvec),Efpvec,'g--', 'linewidth', 2)
+    plot(start:length(Evvec)-1,Evvec(start:end-1),'g', 'linewidth', 2)
+    %plot(1:length(Evvec),Efnvec,'r--', 'linewidth', 2)
+    %plot(1:length(Evvec),Efpvec,'g--', 'linewidth', 2)
+    hd(1)=plot(0:1,Ef_bot*[1 1],'r--', 'linewidth', 2);
+    plot(Ntot:Ntot+1,Ef_top*[1 1],'r--', 'linewidth', 2);
     plot(start*[1 1], [Evvec(start) Ecvec(start)],...
         'linewidth', 2);
     plot([length(Ecvec)-1 length(Ecvec)-1], [Evvec(end-1) Ecvec(end-1)],...
@@ -172,11 +176,5 @@ for ii_vg_bot = 1 : NVg_bot_step
        
 end
 
-%% plot the current
-figure (3)
-semilogy(Vg_bot,abs(I), 'bs-', 'linewidth', 2)
-hold on
-set(gca,'linewidth',2,'fontsize',16, 'box','on')
-xlabel('V_G [V]','fontsize',16)
-ylabel('Current [a.u.]','fontsize',16)
+draw
 
