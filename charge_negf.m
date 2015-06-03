@@ -4,10 +4,10 @@
 % output: the transmission Tr(E) and the charge density Ne
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [Id, Evec, JEx]=current(ED_sd,Ecvec,Evvec,HD0,AUD,Vd_bias)
-global ii_e Evec JEx
+function [Ne_bias, Evec_c, Ne_s]=charge_negf(ED_sd,Ecvec,Evvec,HD0,AUD,Vd_bias)
+clear EvecNe Ne_spec;
+global ii_e EvecNe Ne_spec
 ii_e=0;
-%%%% constants %%%%
 
 %%%%%%%%%% generate the energy grid
 Ef_tail_up=0.2;
@@ -19,16 +19,7 @@ E_bot=min(-Vd_bias,min(Evvec))-Ef_tail_low;
 %E=linspace(E_bot,E_top,E_number);
 %delta_E=(E_top-E_bot)/(E_number-1);
 
-tic
-%for k=1:E_number
-%    Ispc(k)=func_current(E(k),Ucc,AUD,Vd_bias);
-%end
-%Id=sum(Ispc)*delta_E;
-%Evec=E;
-%JEx=Ispc;
-
-[Id]=quadv(@func_current,E_bot,E_top,1e-6,[],ED_sd,Ecvec,...
+[Ne_bias]=quadv(@func_charge,E_bot,E_top,1e-6,[],ED_sd,Ecvec,...
     Evvec,HD0,AUD,Vd_bias);
-[Evec, Ind]=sort(Evec);
-JEx=JEx(Ind,:);
-toc
+[Evec_c, Ind]=sort(EvecNe);
+Ne_s=Ne_spec(Ind,:,:);

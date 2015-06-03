@@ -1,7 +1,9 @@
-function [Ispc]=func_current(ee,ED_sd,Ecvec,Evvec,HD0,AUD,Vd_bias)
+function [Ns_cv]=func_current(ee,ED_sd,Ecvec,Evvec,HD0,AUD,Vd_bias)
 %%% input: ED_sd is the Dirac points of graphene S&D, S to 1st node
 %% Ecvec & Evvec are the band edges in the semi. channel
-global ii_e Evec JEx
+
+%% calculation: all matrices diagonal, 1st diag. for Ec band, 2nd for Ev band
+global ii_e EvecNe Ne_spec
 global kBT
 Np=length(Ecvec);      % number of zigzag rings
 eta=1e-12;
@@ -30,7 +32,7 @@ end
 %sig_s=sigDS(ee,HD{1},-AUD{1}',eye(2),zeros(2,2));
 %sig_d=sigDS(ee,HD{Np},-AUD{Np-1},eye(2),zeros(2,2));
 %% graphene contact
-alpha=1;  % scaling factor for graphene-like self ee
+alpha=0.1;  % scaling factor for graphene-like self ee
 sig_s=(-1i/2)*alpha*abs(ee-ED_sd(1))*eye(2);
 sig_d=(-1i/2)*alpha*abs(ee-ED_sd(2))*eye(2);
 
@@ -41,16 +43,23 @@ gama_d=i*(sig_d-sig_d');
 AD{1}=AD{1}-sig_s;
 AD{Np}=AD{Np}-sig_d;
 
-%%%%%% use the recurssive algorithm to compute Green's function
-[Grl Grd Gru]=recursealg_concise(Np,ALD,AD,AUD);
-Tr=real(diag((1i*(Grd{Np}-Grd{Np}')-Grd{Np}*gama_d*Grd{Np}')*gama_d)); %transmission per spin, method 1
-Tr_c=Tr(1); Tr_v=Tr(2);
-Is_c=Tr(1)*(f2Dc_1-f2Dc_2);  % contribution due to sum. over transverse modes for Ec
-Is_v=-Tr(2)*(f2Dv_1-f2Dv_2);  % contribution due to sum. over transverse modes for Ev
-%Is_c=Tr(1)*(f_1-f_2);  % 1 mode only
-%Is_v=Tr(2)*(f_1-f_2);  % 1 mode only
-Ispc=Is_c+Is_v;  % current spectrum
+con_in=cell(1,Np);
+con_in{1}=gama_s.*([f2Dc_1 0; 0 f2Dv_1]);       
+con_in{Np}=gama_d.*([f2Dc_2 0; 0 f2Dv_2]);
+con_out=cell(1,Np);  % sig_out is NOT meaningful for f2D
+
+for ii=2:(Np-1)
+    con_in{ii}=sparse(2,2);
+    con_out{ii}=sparse(2,2);
+end
+
+[Grl Grd Gru Gnl Gin Gnu Gpl Gout Gpu]=recursealg(Np,ALD,AD,AUD,con_in,con_out);     
+for ii=1:Np
+    Ns_cv(ii,:)=1/2/pi*real(diag(Gin{ii}));    % e & h densities  
+    LDOS_cv(ii,:)=-1/2/pi*imag(diag(Grd{ii}-Grd{ii}'));  % Ec & Ev bands LDOS
+end 
+
 
 ii_e=ii_e+1;
-Evec(ii_e)=ee;
-JEx(ii_e,:)=[Is_c; Is_v];
+EvecNe(ii_e)=ee;
+Ne_spec(ii_e,:,:)=Ns_cv;

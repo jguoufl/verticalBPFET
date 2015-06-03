@@ -7,7 +7,7 @@ d_top = 6.5e-10;         % The interlayer distance between BPs
 d_int = 6.5e-10;         % The distance between adjacent BP layers
 
 %% consider an interfacial oxide between contact and channel bar.
-d_ox=2e-9;
+d_ox=0e-9;
 epsr_ox=3.9;
 d_ox_eff=d_ox/epsr_ox;
 

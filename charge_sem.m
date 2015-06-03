@@ -1,5 +1,5 @@
 %%% calculate charge vector
-function [y]=charge(Efmn, Efmp, Egh, vF, d_int, flag_prime)
+function [y]=charge(Efmn, Efmp, Egh, vF, dsp_int, flag_prime)
 %%% physical constant
 global q hbar kBT N3D
 n0vec = q^2/pi/hbar^2./vF.^2;
@@ -35,14 +35,12 @@ else
 %     end
 
     if flag_prime==0        
-        y(2:end-1) = q*d_int*N3D.*(FDjx(zetan(2:end-1),1/2) - FDjx(zetap(2:end-1),1/2));
+        y(2:end-1) = q*dsp_int*N3D.*(FDjx(zetan(2:end-1),1/2) - FDjx(zetap(2:end-1),1/2));
         %%% no valley degeneracy
     elseif flag_prime==1     
-        y(2:end-1) = -q*d_int*N3D*(1/kBT).*(FDjx(zetan(2:end-1),-1/2) + FDjx(zetap(2:end-1),-1/2));  
+        y(2:end-1) = -q*dsp_int*N3D*(1/kBT).*(FDjx(zetan(2:end-1),-1/2) + FDjx(zetap(2:end-1),-1/2));  
         %%%Need to be checked
     end
-
-    
-    
+      
 end
 
