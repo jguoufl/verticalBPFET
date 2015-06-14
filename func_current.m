@@ -8,14 +8,17 @@ eta=1e-12;
 
 %%%%%%%% initialization
 ep=ee+eta;
-f2Dc_1=log(1+exp(-(ee-0)/kBT));  % f2D for sum over parabolic Ec transverse modes
-f2Dc_2=log(1+exp(-(ee-(-Vd_bias))/kBT));  % drain
+Ef_bot=-Vd_bias; % this is the bias method in the experiment by Xia group, need to change for other exper. 
+Ef_top=0;
+%% The first node is the bottom cont. and the last node is the top cont.
+f2Dc_1=log(1+exp(-(ee-Ef_bot)/kBT));  % f2D for sum over parabolic Ec transverse modes
+f2Dc_2=log(1+exp(-(ee-Ef_top)/kBT));  % drain
 
-f2Dv_1=log(1+exp(-(0-ee)/kBT));  % f2D for sum over parabolic Ec transverse modes
-f2Dv_2=log(1+exp(-((-Vd_bias)-ee)/kBT));  % drain
+f2Dv_1=log(1+exp(-(Ef_bot-ee)/kBT));  % f2D for sum over parabolic Ec transverse modes
+f2Dv_2=log(1+exp(-(Ef_top-ee)/kBT));  % drain
 
-f_1=1/(1+exp((ee-0)/kBT));
-f_2=1/(1+exp((ee-(-Vd_bias))/kBT));
+f_1=1/(1+exp((ee-Ef_bot)/kBT));
+f_2=1/(1+exp((ee-Ef_top)/kBT));
 %%% set the diagonal blocks for AG=I
 AD=cell(1,Np);
 for ii=1:Np
